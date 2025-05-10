@@ -1,4 +1,6 @@
 streamlit
+sentence-transformers
+torch
 scikit-learn
 PyPDF2
 pdfplumber
