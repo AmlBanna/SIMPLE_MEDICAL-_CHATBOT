@@ -10,7 +10,7 @@ st.write("📂 Current Working Directory:", os.getcwd())
 st.write("📄 Files in current directory:", os.listdir())
 
 # التحقق من وجود الملف
-file_path = "data/medical_knowledge_with_keywords.json"
+file_path = "medical_knowledge_with_keywords.json"
 if not os.path.exists(file_path):
     st.error(f"❌ الملف غير موجود: {file_path}")
     st.stop()
