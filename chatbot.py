@@ -43,7 +43,7 @@ def find_best_matches(question, top_k=3):
     return results
 
 # Streamlit UI (in English)
-st.title("🤖 Medical Chatbot")
+st.title("🤖 Simple Medical Chatbot")
 st.markdown("Ask your medical question and get information from books.")
 
 user_input = st.text_input("Enter your question here...")
