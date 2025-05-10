@@ -1,78 +1,73 @@
-import json
 import os
+import PyPDF2
+import json
 from sentence_transformers import SentenceTransformer, util
+from transformers import pipeline
 import streamlit as st
 
-# Check current directory (for debugging)
-st.write("📂 Current Working Directory:", os.getcwd())
-st.write("📄 Files in current directory:", os.listdir())
+# === 1. استخراج النصوص من PDF (مثال على ملف واحد فقط للتجربة) ===
 
-# File path
-file_path = "medical_knowledge_with_keywords.json"
-if not os.path.exists(file_path):
-    st.error(f"❌ File not found: {file_path}")
-    st.stop()
-else:
-    st.success(f"✅ File found: {file_path}")
+def extract_text_from_pdf(pdf_path):
+    with open(pdf_path, 'rb') as file:
+        reader = PyPDF2.PdfReader(file)
+        full_text = ''
+        for page in reader.pages:
+            text = page.extract_text()
+            if text:
+                full_text += text + '\n'
+        return full_text
 
-# Load semantic model
+# === 2. تقسيم النص إلى فصول أو وحدات (لتسهيل البحث) ===
+
+def split_into_units(text, chunk_size=500):
+    words = text.split()
+    chunks = [' '.join(words[i:i+chunk_size]) for i in range(0, len(words), chunk_size)]
+    return chunks
+
+# === 3. تحميل النماذج ===
+
 @st.cache_resource
-def load_model():
-    return SentenceTransformer('all-MiniLM-L6-v2')
+def load_models():
+    search_model = SentenceTransformer('all-MiniLM-L6-v2')
+    qa_pipeline = pipeline("question-answering", model="distilbert-base-cased-distilled-squad")
+    return search_model, qa_pipeline
 
-model = load_model()
+search_model, qa_pipeline = load_models()
 
-# Load knowledge base
-with open(file_path, 'r', encoding='utf-8') as f:
-    knowledge_base = json.load(f)
+# === 4. واجهة المستخدم ===
 
-# Encode passages
-passages = [item['title'] + " " + item.get('summary', '') for item in knowledge_base]
-embeddings = model.encode(passages, convert_to_tensor=True)
+st.title("🤖 Medical Chatbot - Hybrid Mode")
+st.markdown("Ask your medical question and get a smart answer.")
 
-# Search function
-def find_best_matches(question, top_k=3):
-    question_emb = model.encode(question, convert_to_tensor=True)
-    hits = util.semantic_search(question_emb, embeddings, top_k=top_k)[0]
+user_input = st.text_input("Enter your question...")
 
-    results = []
-    for hit in hits:
-        result = knowledge_base[hit['corpus_id']]
-        result['score'] = hit['score']
-        results.append(result)
-    return results
-
-# Streamlit UI (in English)
-st.title("🤖 Simple Medical Chatbot")
-st.markdown("Ask your medical question and get information from books.")
-
-user_input = st.text_input("Enter your question here...")
-
-# Category filter
-category_filter = st.selectbox(
-    "Filter by category (optional):",
-    ["All categories", "pharmacology", "first_aid", "pain_management"]
-)
+# === 5. معالجة السؤال ===
 
 if user_input:
-    results = find_best_matches(user_input, top_k=3)
-
-    if category_filter != "All categories":
-        results = [r for r in results if r.get('category') == category_filter]
-
-    if results:
-        st.subheader("🔍 Top Results:")
-        for i, result in enumerate(results):
-            with st.expander(f"🏆 Result #{i+1} - Similarity Score: {result['score']:.2f}"):
-                st.markdown(f"**Title:** {result['title']}")
-                st.markdown(f"**Category:** {result.get('category', '-')}")
-                st.markdown(f"**Summary:** {result.get('summary', 'No summary available')}")
-
-                # Display content snippet
-                content = result.get('content', '')
-                if len(content) > 500:
-                    st.markdown(f"**Snippet from text:** {content[:500]}...")
-                else:
-                    st.markdown(f"**Full text:** {content}")
+    # 🔍 الخطوة 1: استيراد النص من PDF (مثال على كتاب واحد)
+    pdf_file = "example_book.pdf"  # استبدل باسم كتابك
+    if not os.path.exists(pdf_file):
+        st.error(f"❌ File not found: {pdf_file}")
     else:
-        st.warning("Sorry, no matching information was found for this query.")
+        with st.spinner("🔍 Extracting text from PDF..."):
+            book_text = extract_text_from_pdf(pdf_file)
+
+        # 📖 الخطوة 2: تقسيم النص إلى وحدات صغيرة
+        chunks = split_into_units(book_text)
+
+        # 🔍 الخطوة 3: البحث مع Semantic Search
+        chunk_embeddings = search_model.encode(chunks, convert_to_tensor=True)
+        question_embedding = search_model.encode(user_input, convert_to_tensor=True)
+        scores = util.cos_sim(question_embedding, chunk_embeddings)[0]
+        best_chunk_index = scores.argmax().item()
+        best_chunk = chunks[best_chunk_index]
+
+        st.markdown("### 📝 Best Matching Text Found:")
+        st.info(best_chunk[:500] + ("..." if len(best_chunk) > 500 else ""))
+
+        # 💬 الخطوة 4: الاستنتاج باستخدام Transformers
+        with st.spinner("🧠 Generating answer..."):
+            result = qa_pipeline(question=user_input, context=best_chunk)
+
+        st.markdown("### ✅ Smart Answer Generated:")
+        st.success(result['answer'])
