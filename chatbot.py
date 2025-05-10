@@ -40,7 +40,6 @@ user_input = st.text_input("Enter your question...")
 if user_input:
     # قائمة الكتب التي تريد قراءتها
     books = [
-        "Lippincott_Illustrated_Reviews_Pharmacology_7th.pdf",
         "New-Vital-First-Aid-First-Aid-Book-112019.pdf",
         "pain_wise_a_patients_guide_to_pain_management_1nbsped_1578264081.pdf"
     ]
