@@ -1,41 +1,28 @@
 import json
 import re
-from difflib import get_close_matches
-import spacy
+from sentence_transformers import SentenceTransformer, util
 import streamlit as st
 
-# تحميل النموذج اللغوي
-nlp = spacy.load("en_core_web_sm")
+# تحميل النموذج (سيتم تنزيله تلقائيًا عند التشغيل الأول)
+@st.cache_resource
+def load_model():
+    return SentenceTransformer('all-MiniLM-L6-v2')
+
+model = load_model()
 
 # تحميل قاعدة البيانات
 with open('data/medical_knowledge_with_keywords.json', 'r', encoding='utf-8') as f:
     knowledge_base = json.load(f)
 
-def clean_text(text):
-    return re.sub(r'[^\w\s]', '', text.lower())
+# تحويل العناوين والملخصات إلى تعبيرات مضمنة
+passages = [item['title'] + " " + item.get('summary', '') for item in knowledge_base]
+embeddings = model.encode(passages, convert_to_tensor=True)
 
 def find_best_match(question):
-    question = clean_text(question)
-    matches = []
-
-    for item in knowledge_base:
-        title = clean_text(item['title'])
-        summary = clean_text(item.get('summary', ''))
-        content = clean_text(item.get('content', ''))
-
-        if question in title or question in summary or question in content:
-            matches.append(item)
-
-    if not matches:
-        all_titles = [clean_text(item['title']) for item in knowledge_base]
-        close_matches = get_close_matches(question, all_titles, n=1, cutoff=0.5)
-        if close_matches:
-            best_title = close_matches[0]
-            for item in knowledge_base:
-                if clean_text(item['title']) == best_title:
-                    return item
-
-    return matches[0] if matches else None
+    question_emb = model.encode(question, convert_to_tensor=True)
+    hits = util.semantic_search(question_emb, embeddings, top_k=1)[0]
+    best_match = knowledge_base[hits[0]['corpus_id']]
+    return best_match
 
 # واجهة المستخدم
 st.title("🤖 الشات بوت الطبي")
