@@ -1,28 +1,36 @@
 import json
 import re
-from sentence_transformers import SentenceTransformer, util
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
 import streamlit as st
+import os
 
-# تحميل النموذج (سيتم تنزيله تلقائيًا عند التشغيل الأول)
-@st.cache_resource
-def load_model():
-    return SentenceTransformer('all-MiniLM-L6-v2')
+# عرض المسار الحالي لمساعدتنا في التصحيح
+st.write("📂 Current Working Directory:", os.getcwd())
+st.write("📄 Files in current directory:", os.listdir())
 
-model = load_model()
+# التحقق من وجود الملف
+file_path = "data/medical_knowledge_with_keywords.json"
+if not os.path.exists(file_path):
+    st.error(f"❌ الملف غير موجود: {file_path}")
+    st.stop()
+else:
+    st.success(f"✅ الملف موجود: {file_path}")
 
 # تحميل قاعدة البيانات
-with open('data/medical_knowledge_with_keywords.json', 'r', encoding='utf-8') as f:
+with open(file_path, "r", encoding="utf-8") as f:
     knowledge_base = json.load(f)
 
-# تحويل العناوين والملخصات إلى تعبيرات مضمنة
-passages = [item['title'] + " " + item.get('summary', '') for item in knowledge_base]
-embeddings = model.encode(passages, convert_to_tensor=True)
+# إنشاء نموذج البحث باستخدام الكلمات
+passages = [item["title"] + " " + item.get("summary", "") for item in knowledge_base]
+vectorizer = TfidfVectorizer()
+tfidf_matrix = vectorizer.fit_transform(passages)
 
 def find_best_match(question):
-    question_emb = model.encode(question, convert_to_tensor=True)
-    hits = util.semantic_search(question_emb, embeddings, top_k=1)[0]
-    best_match = knowledge_base[hits[0]['corpus_id']]
-    return best_match
+    question_vec = vectorizer.transform([question])
+    scores = cosine_similarity(question_vec, tfidf_matrix).flatten()
+    best_idx = scores.argmax()
+    return knowledge_base[best_idx]
 
 # واجهة المستخدم
 st.title("🤖 الشات بوت الطبي")
