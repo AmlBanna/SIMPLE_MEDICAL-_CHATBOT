@@ -1,9 +1,25 @@
+# الأساسيات
 streamlit==1.22.0
 PyPDF2==3.0.1
+
+# معالجة اللغة الطبيعية
 transformers==4.30.0
 sentence-transformers==2.2.2
 spacy==3.5.0
+https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0-py3-none-any.whl
+
+# الذكاء الاصطناعي والتعلم الآلي
+torch==2.0.1
+scikit-learn==1.2.2
+numpy==1.23.5
+pandas==1.5.3
+
+# الأدوات المساعدة
 googletrans==3.1.0a0
 python-dotenv==1.0.0
 requests==2.28.2
-torch==2.0.1
+tqdm==4.65.0  # لشاشات التقدم
+
+# إدارة الذاكرة
+psutil==5.9.5
+gc-collect==0.2.0
