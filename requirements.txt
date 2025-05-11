@@ -1,21 +1,22 @@
-# أساسيات TensorFlow (إصدار مستقر متوافق مع Python 3.10)
-tensorflow==2.10.0  # Core ML framework
+# Core ML framework (lighter version)
+tensorflow==2.9.0  # More compatible with Python 3.10
 
-# معالجة اللغة الطبيعية
-transformers==4.30.0  # لنماذج BERT الطبية
-spacy==3.5.0  # لتحليل النصوص الطبية
-https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0-py3-none-any.whl 
-# الواجهة والتشغيل
-streamlit==1.22.0  # لواجهة الويب التفاعلية
-pyPDF2==3.0.1  # لقراءة ملفات PDF الطبية
+# NLP Libraries
+transformers==4.30.0
+spacy==3.5.0
+spacy[en_core_web_sm]==3.5.0  # Lighter and easier to deploy
 
-# أدوات مساعدة
-numpy==1.23.5  # للحسابات العلمية
-pandas==1.5.3  # لمعالجة البيانات
-scikit-learn==1.2.2  # لخوارزميات ML
+# UI & PDF Handling
+streamlit==1.22.0
+PyPDF2==3.0.1
 
-# الترجمة (اختياري)
-googletrans==4.0.0-rc1  # للترجمة الآنية
+# Utilities
+numpy==1.23.5
+pandas==1.5.3
+scikit-learn==1.2.2
 
-# إدارة البيئة
-python-dotenv==1.0.0  # لإدارة المتغيرات السرية
+# Translation (more stable version)
+googletrans-new==1.1.29
+
+# Environment management
+python-dotenv==1.0.0
