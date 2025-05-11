@@ -1,4 +1,19 @@
+# حل تثبيت spacy model تلقائيًا
+import subprocess
+import sys
 
+def install_spacy_model():
+    try:
+        import spacy
+        spacy.load('en_core_web_md')
+    except:
+        subprocess.check_call([
+            sys.executable, 
+            "-m", "spacy", 
+            "download", "en_core_web_md"
+        ])
+
+install_spacy_model()
 
 import os
 import re
