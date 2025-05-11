@@ -1,23 +1,22 @@
-streamlit
-sentence-transformers
-torch
-scikit-learn
-PyPDF2
-pdfplumber
-jupyter
-spacy
-torch
-streamlit
-ipykernel
-transformers
-deep-translator
-langchain
-langchain-groq
-gTTS
-tensorflow==2.10.0
-sentence-transformers==2.2.2
-spacy==3.5.0
-streamlit==1.22.0
-googletrans==4.0.0-rc1
-twilio==8.0.0
-PyPDF2==3.0.1
+# أساسيات TensorFlow (إصدار مستقر متوافق مع Python 3.10)
+tensorflow==2.10.0  # Core ML framework
+
+# معالجة اللغة الطبيعية
+transformers==4.30.0  # لنماذج BERT الطبية
+spacy==3.5.0  # لتحليل النصوص الطبية
+en-core-web-md @ https://github.com/explosion/spacy-models/releases/download/en_core_web_md-3.5.0/en_core_web_md-3.5.0-py3-none-any.whl  # نموذج English medium لـ SpaCy
+
+# الواجهة والتشغيل
+streamlit==1.22.0  # لواجهة الويب التفاعلية
+pyPDF2==3.0.1  # لقراءة ملفات PDF الطبية
+
+# أدوات مساعدة
+numpy==1.23.5  # للحسابات العلمية
+pandas==1.5.3  # لمعالجة البيانات
+scikit-learn==1.2.2  # لخوارزميات ML
+
+# الترجمة (اختياري)
+googletrans==4.0.0-rc1  # للترجمة الآنية
+
+# إدارة البيئة
+python-dotenv==1.0.0  # لإدارة المتغيرات السرية
