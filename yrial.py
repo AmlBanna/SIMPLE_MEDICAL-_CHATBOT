@@ -1,4 +1,3 @@
-python -m pip install --pre --extra-index-url https://pypi.nvidia.com tensorflow==2.10.0
 import os
 import re
 import json
