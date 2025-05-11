@@ -5,7 +5,7 @@ import PyPDF2
 import requests
 from difflib import get_close_matches
 import streamlit as st
-from transformers import pipeline, AutoTokenizer, AutoModelForSeq2SeqLM
+from transformers import pipeline
 from sentence_transformers import SentenceTransformer, util
 import spacy
 from googletrans import Translator
