@@ -11,6 +11,16 @@ except:
 
 
 
+from deep_translator import GoogleTranslator
+
+def translate_text(text, dest_lang='en'):
+    try:
+        translated = GoogleTranslator(source='auto', target=dest_lang).translate(text)
+        return translated
+    except Exception as e:
+        st.error(f"Translation error: {str(e)}")
+        return text
+
 
 import os
 import re
@@ -22,7 +32,6 @@ import streamlit as st
 from transformers import pipeline
 from sentence_transformers import SentenceTransformer, util
 import spacy
-from googletrans import Translator
 from twilio.rest import Client
 
 # ========== Configuration ==========
