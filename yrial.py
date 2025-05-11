@@ -1,26 +1,4 @@
 
-import spacy
-import subprocess
-
-try:
-    nlp = spacy.load("en_core_web_sm")
-except:
-    subprocess.run(["python", "-m", "spacy", "download", "en_core_web_sm"])
-    nlp = spacy.load("en_core_web_sm")
-
-
-
-
-from deep_translator import GoogleTranslator
-
-def translate_text(text, dest_lang='en'):
-    try:
-        translated = GoogleTranslator(source='auto', target=dest_lang).translate(text)
-        return translated
-    except Exception as e:
-        st.error(f"Translation error: {str(e)}")
-        return text
-
 
 import os
 import re
