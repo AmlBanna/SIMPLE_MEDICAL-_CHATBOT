@@ -1,22 +1,21 @@
-# Core ML framework (lighter version)
-tensorflow==2.9.0  # More compatible with Python 3.10
-
-# NLP Libraries
-transformers==4.30.0
-spacy==3.5.0
-spacy[en_core_web_sm]==3.5.0  # Lighter and easier to deploy
-
-# UI & PDF Handling
+# UI and PDF handling
 streamlit==1.22.0
 PyPDF2==3.0.1
+
+# NLP Models
+transformers==4.30.0
+sentence-transformers==2.2.0
+spacy==3.5.0
+en-core-web-sm @ https://github.com/explosion/spacy-models/releases/download/en_core_web_sm-3.5.0/en_core_web_sm-3.5.0-py3-none-any.whl 
+
+# Translation (optional)
+googletrans-new==1.1.29
+
+# SMS Integration (optional)
+twilio==8.1.0
 
 # Utilities
 numpy==1.23.5
 pandas==1.5.3
 scikit-learn==1.2.2
-
-# Translation (more stable version)
-googletrans-new==1.1.29
-
-# Environment management
 python-dotenv==1.0.0
